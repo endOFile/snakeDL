@@ -1,7 +1,11 @@
+import random as rd
+
 class QTable():
 
-    lRate = .95
+    lRate = .001
     dRate = .75
+    EXP_STEP = .05
+    MIN_EXPLORATION = .001
 
     # 1 = cella occupata
     # 0 = cella libera
@@ -29,11 +33,17 @@ class QTable():
                     for l in range(0, 2):
                         for m in range(-1, 2):
                             for n in range(-1, 2):
-                                self.table[str(i)+str(j)+str(k)+str(l)+str(m)+str(n)] = [0,0,0,0]
+                                self.table[str(i)+str(j)+str(k)+str(l)+str(m)+str(n)] = [[0,0,0,0], .9]
 
-    def chooseAction(self, state):
-        return self.table[state].index(max(self.table[state]))
+    def chooseAction(self, state, enabExplor):
+        if enabExplor and rd.random() <= self.table[state][1]:
+            temp_exp = self.table[state][1]-self.EXP_STEP
+            self.table[state][1] = (self.MIN_EXPLORATION if temp_exp < self.MIN_EXPLORATION else temp_exp)
+            #print(self.table[state][1])
+            return rd.randint(0,3)
+        return self.table[state][0].index(max(self.table[state][0]))
 
     def updateTable(self, state, action, reward, futureReward):
-        oldQ = self.table[state][action]
-        self.table[state][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)
+        oldQ = self.table[state][0][action]
+        print (self.lRate * (reward + self.dRate * (futureReward) - oldQ))
+        self.table[state][0][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)

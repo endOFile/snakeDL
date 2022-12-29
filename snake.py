@@ -23,7 +23,7 @@ pygame.display.set_caption('Snake')
 clock = pygame.time.Clock()
  
 snake_block = 10
-snake_speed = 50
+snake_speed = 20
 
 MAX_TEST_NUMBER = 200
 MAX_STEP = 500
@@ -80,10 +80,10 @@ def getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody):
         return -1000
     for x in snake_list[:-1]:
         if x == snake_head:
-            return -1000
+            return -200
     if x1 == foodx and y1 == foody:
         return 50
-    return (euclidean([precx1,precy1], [foodx,foody]) - euclidean([x1,y1], [foodx,foody]))/snake_block
+    return ((euclidean([precx1,precy1], [foodx,foody]) - euclidean([x1,y1], [foodx,foody]))/snake_block) - 0.1
 
 def getChangePosition(action):
     y1_change = 0
@@ -122,7 +122,7 @@ def gameLoop(watchResult=False):
         precx1 = x1
         precy1 = y1
         state = getState(x1, y1, snake_list, foodx, foody)
-        action = table.chooseAction(state)
+        action = table.chooseAction(state, not watchResult)
         x1_change, y1_change = getChangePosition(action)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -134,9 +134,9 @@ def gameLoop(watchResult=False):
         snake_head.append(y1)
         snake_list.append(snake_head)
         reward = getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody)
-        if watchResult:
-            print(reward)
-        temp_x1, temp_y1 = getChangePosition(table.chooseAction(getState(x1, y1, snake_list, foodx, foody)))
+        #if watchResult:
+            #print(reward)
+        temp_x1, temp_y1 = getChangePosition(table.chooseAction(getState(x1, y1, snake_list, foodx, foody),  False))
         temp_x1 = temp_x1 + x1
         temp_y1 = temp_y1 + y1
         futureReward = getReward(x1, y1, temp_x1, temp_y1, snake_list, snake_head, foodx, foody)
@@ -167,7 +167,6 @@ def run():
     n_test = 0
     while n_test < MAX_TEST_NUMBER:
         n_test = n_test + 1
-        print(n_test)
         gameLoop(False)
     gameLoop(True)
 
