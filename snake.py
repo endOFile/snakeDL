@@ -14,7 +14,7 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
  
-dis_width = 600
+dis_width = 400
 dis_height = 400
  
 dis = pygame.display.set_mode((dis_width, dis_height))
@@ -24,9 +24,12 @@ clock = pygame.time.Clock()
  
 snake_block = 10
 snake_speed = 50
- 
-font_style = pygame.font.SysFont("bahnschrift", 25)
-score_font = pygame.font.SysFont("comicsansms", 35)
+
+MAX_TEST_NUMBER = 200
+MAX_STEP = 500
+
+def euclidean(a, b):
+    return np.sqrt(pow(a[0]-b[0],2) + pow(a[1]-b[1],2))
 
 def manhattan(a, b):
     return sum(abs(val1-val2) for val1, val2 in zip(a,b))
@@ -74,13 +77,13 @@ def getState(x1, y1, snake_list, foodx, foody):
 
 def getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody):
     if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-        return -100
+        return -1000
     for x in snake_list[:-1]:
         if x == snake_head:
-            return -100
+            return -1000
     if x1 == foodx and y1 == foody:
-        return 20
-    return (manhattan([precx1,precy1], [foodx,foody]) - manhattan([x1,y1], [foodx,foody]))/snake_block
+        return 50
+    return (euclidean([precx1,precy1], [foodx,foody]) - euclidean([x1,y1], [foodx,foody]))/snake_block
 
 def getChangePosition(action):
     y1_change = 0
@@ -99,11 +102,11 @@ def getChangePosition(action):
         y1_change = 0
     return (x1_change, y1_change)
 
-def gameLoop():
+def gameLoop(watchResult=False):
     game_over = False
  
-    x1 = dis_width / 2
-    y1 = dis_height / 2
+    x1 = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
+    y1 = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
  
     x1_change = 0
     y1_change = 0
@@ -113,30 +116,17 @@ def gameLoop():
  
     foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
- 
-    while not game_over:
+    n_step = 0
+    while (not game_over) and (n_step < MAX_STEP):
+        n_step = n_step + 1
         precx1 = x1
         precy1 = y1
         state = getState(x1, y1, snake_list, foodx, foody)
         action = table.chooseAction(state)
         x1_change, y1_change = getChangePosition(action)
-        #cambiare da schiacciare pulsanti a RL
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_LEFT:
-            #         x1_change = -snake_block
-            #         y1_change = 0
-            #     elif event.key == pygame.K_RIGHT:
-            #         x1_change = snake_block
-            #         y1_change = 0
-            #     elif event.key == pygame.K_UP:
-            #         y1_change = -snake_block
-            #         x1_change = 0
-            #     elif event.key == pygame.K_DOWN:
-            #         y1_change = snake_block
-            #         x1_change = 0
         x1 += x1_change
         y1 += y1_change
         snake_head = []
@@ -144,16 +134,18 @@ def gameLoop():
         snake_head.append(y1)
         snake_list.append(snake_head)
         reward = getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody)
+        if watchResult:
+            print(reward)
         temp_x1, temp_y1 = getChangePosition(table.chooseAction(getState(x1, y1, snake_list, foodx, foody)))
         temp_x1 = temp_x1 + x1
         temp_y1 = temp_y1 + y1
         futureReward = getReward(x1, y1, temp_x1, temp_y1, snake_list, snake_head, foodx, foody)
         table.updateTable(state, action, reward, futureReward)
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            gameLoop()
+                return
         for x in snake_list[:-1]:
             if x == snake_head:
-                gameLoop()
+                return
         if len(snake_list) > length_of_snake:
             del snake_list[0]
         
@@ -166,10 +158,17 @@ def gameLoop():
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
             length_of_snake += 1
- 
-        clock.tick(snake_speed)
- 
-    pygame.quit()
-    quit()
+        if watchResult:
+            clock.tick(snake_speed)
+    
+    print("Max step")
 
-gameLoop()
+def run():
+    n_test = 0
+    while n_test < MAX_TEST_NUMBER:
+        n_test = n_test + 1
+        print(n_test)
+        gameLoop(False)
+    gameLoop(True)
+
+run()

@@ -36,4 +36,4 @@ class QTable():
 
     def updateTable(self, state, action, reward, futureReward):
         oldQ = self.table[state][action]
-        self.table[state][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ) 
+        self.table[state][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)
