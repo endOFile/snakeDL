@@ -32,10 +32,8 @@ class QTable():
                                 self.table[str(i)+str(j)+str(k)+str(l)+str(m)+str(n)] = [0,0,0,0]
 
     def chooseAction(self, state):
-        return max(self.table[state])
+        return self.table[state].index(max(self.table[state]))
 
-    def updateTable(self, state, action, reward):
+    def updateTable(self, state, action, reward, futureReward):
         oldQ = self.table[state][action]
-        #TODO future reward
-        futureReward = 1
-        self.table[state][action] = oldQ + lRate * (reward + dRate * (futureReward) - oldQ) 
+        self.table[state][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ) 
