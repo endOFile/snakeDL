@@ -39,13 +39,11 @@ class QTable():
         if enabExplor and rd.random() <= self.table[state][1]:
             temp_exp = self.table[state][1]-self.EXP_STEP
             self.table[state][1] = (self.MIN_EXPLORATION if temp_exp < self.MIN_EXPLORATION else temp_exp)
-            #print(self.table[state][1])
             return rd.randint(0,3)
         return self.table[state][0].index(max(self.table[state][0]))
 
     def updateTable(self, state, action, reward, futureReward):
         oldQ = self.table[state][0][action]
-        print (self.lRate * (reward + self.dRate * (futureReward) - oldQ))
         self.table[state][0][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)
 
     def printTable(self):

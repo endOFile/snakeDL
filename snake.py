@@ -14,19 +14,19 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
  
-dis_width = 400
-dis_height = 400
+dis_width = 800
+dis_height = 800
  
 dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('Snake')
  
 clock = pygame.time.Clock()
  
-snake_block = 10
-snake_speed = 20
+snake_block = 50
+snake_speed = 10
 
-MAX_TEST_NUMBER = 300
-MAX_STEP = 500
+MAX_TEST_NUMBER = 400
+MAX_STEP = 800
 
 def euclidean(a, b):
     return np.sqrt(pow(a[0]-b[0],2) + pow(a[1]-b[1],2))
@@ -35,8 +35,17 @@ def manhattan(a, b):
     return sum(abs(val1-val2) for val1, val2 in zip(a,b))
  
 def drawSnake(snake_block, snake_list):
-    for x in snake_list:
-        pygame.draw.rect(dis, black, [x[0], x[1], snake_block, snake_block])
+    pygame.draw.rect(dis, black, [snake_list[len(snake_list)-1][0], snake_list[len(snake_list)-1][1], snake_block, snake_block])
+    if len(snake_list) > 1:
+        maxGr = 9/10
+        minGr = 2/5
+        stepGr = (maxGr - minGr) / (len(snake_list)-1)
+        dimTail = minGr
+        dist = (1-dimTail)/2
+        for x in snake_list[:-1]:
+            pygame.draw.rect(dis, black, [x[0]+snake_block*dist, x[1]+snake_block*dist, snake_block*dimTail, snake_block*dimTail])
+            dimTail = dimTail + stepGr
+            dist = (1-dimTail)/2
 
 def getState(x1, y1, snake_list, foodx, foody):
     s = [0] * 6
@@ -105,8 +114,8 @@ def getChangePosition(action):
 def gameLoop(watchResult=False):
     game_over = False
  
-    x1 = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-    y1 = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+    x1 = round(random.randrange(0, dis_width - snake_block) / snake_block) * snake_block
+    y1 = round(random.randrange(0, dis_height - snake_block) / snake_block) * snake_block
  
     x1_change = 0
     y1_change = 0
@@ -114,8 +123,8 @@ def gameLoop(watchResult=False):
     snake_list = []
     length_of_snake = 1
  
-    foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-    foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+    foodx = round(random.randrange(0, dis_width - snake_block) / snake_block) * snake_block
+    foody = round(random.randrange(0, dis_height - snake_block) / snake_block) * snake_block
     n_step = 0
     while (not game_over) and (n_step < MAX_STEP):
         n_step = n_step + 1
@@ -150,13 +159,16 @@ def gameLoop(watchResult=False):
             del snake_list[0]
         
         dis.fill(white)
-        pygame.draw.rect(dis, red, [foodx, foody, snake_block, snake_block])
+        pygame.draw.rect(dis, red, [foodx+snake_block*1/10, foody+snake_block*1/10, snake_block*4/5, snake_block*4/5])
         drawSnake(snake_block, snake_list)
         pygame.display.update()
  
         if x1 == foodx and y1 == foody:
-            foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
-            foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
+            foodx = round(random.randrange(0, dis_width - snake_block) / snake_block) * snake_block
+            foody = round(random.randrange(0, dis_height - snake_block) / snake_block) * snake_block
+            while [foodx, foody] in snake_list:
+                foodx = round(random.randrange(0, dis_width - snake_block) / snake_block) * snake_block
+                foody = round(random.randrange(0, dis_height - snake_block) / snake_block) * snake_block
             length_of_snake += 1
         if watchResult:
             clock.tick(snake_speed)
