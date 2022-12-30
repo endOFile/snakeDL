@@ -29,8 +29,8 @@ font_style = pygame.font.SysFont(None, 170)
 snake_block = 50
 snake_speed = 10
 
-MAX_TEST_NUMBER = 100 #400
-MAX_STEP = 400 #800
+MAX_TEST_NUMBER = 400 #400
+MAX_STEP = 800 #800
 
 def euclidean(a, b):
     return np.sqrt(pow(a[0]-b[0],2) + pow(a[1]-b[1],2))
