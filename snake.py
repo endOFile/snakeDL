@@ -25,7 +25,7 @@ clock = pygame.time.Clock()
 snake_block = 10
 snake_speed = 20
 
-MAX_TEST_NUMBER = 200
+MAX_TEST_NUMBER = 300
 MAX_STEP = 500
 
 def euclidean(a, b):
@@ -169,5 +169,6 @@ def run():
         n_test = n_test + 1
         gameLoop(False)
     gameLoop(True)
+    table.printTable()
 
 run()

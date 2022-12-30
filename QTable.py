@@ -3,8 +3,8 @@ import random as rd
 class QTable():
 
     lRate = .001
-    dRate = .75
-    EXP_STEP = .05
+    dRate = .05
+    EXP_STEP = .1
     MIN_EXPLORATION = .001
 
     # 1 = cella occupata
@@ -47,3 +47,6 @@ class QTable():
         oldQ = self.table[state][0][action]
         print (self.lRate * (reward + self.dRate * (futureReward) - oldQ))
         self.table[state][0][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)
+
+    def printTable(self):
+        print(self.table)
