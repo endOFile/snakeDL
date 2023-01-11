@@ -161,11 +161,9 @@ def gameLoop(isTraining=False):
         snake_head.append(y1)
         snake_list.append(snake_head)
         reward = getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody)
-        temp_x1, temp_y1 = getChangePosition(table.chooseAction(getState(x1, y1, snake_list, foodx, foody),  False))
-        temp_x1 = temp_x1 + x1
-        temp_y1 = temp_y1 + y1
-        futureReward = getReward(x1, y1, temp_x1, temp_y1, snake_list, snake_head, foodx, foody)
-        table.updateTable(state, action, reward, futureReward)
+        next_state = getState(x1, y1, snake_list, foodx, foody)
+        next_action = table.chooseAction(next_state,  False)
+        table.updateTable(state, action, reward, next_state, next_action)
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
                 return
         for x in snake_list[:-1]:
@@ -199,5 +197,6 @@ def run():
         n_test = n_test + 1
         gameLoop(True)
     gameLoop(False)
+    table.printTable()
 
 run()

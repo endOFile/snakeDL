@@ -42,9 +42,10 @@ class QTable():
             return rd.randint(0,3)
         return self.table[state][0].index(max(self.table[state][0]))
 
-    def updateTable(self, state, action, reward, futureReward):
-        oldQ = self.table[state][0][action]
-        self.table[state][0][action] = oldQ + self.lRate * (reward + self.dRate * (futureReward) - oldQ)
+    def updateTable(self, state, action, reward, next_state, next_action):
+        old_q = self.table[state][0][action]
+        next_q = self.table[next_state][0][next_action]
+        self.table[state][0][action] = old_q + self.lRate * (reward + self.dRate * next_q - old_q)
 
     def printTable(self):
         print(self.table)
