@@ -162,8 +162,7 @@ def gameLoop(isTraining=False):
         snake_list.append(snake_head)
         reward = getReward(precx1, precy1, x1, y1, snake_list, snake_head, foodx, foody)
         next_state = getState(x1, y1, snake_list, foodx, foody)
-        next_action = table.chooseAction(next_state,  False)
-        table.updateTable(state, action, reward, next_state, next_action)
+        table.updateTable(state, action, reward, next_state)
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
                 return
         for x in snake_list[:-1]:
